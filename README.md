@@ -1,6 +1,6 @@
 # pragmaticbyharsh.com
 
-Personal site for [Harshavardhanan Deekeswar](https://www.pragmaticbyharsh.com).
+Personal site for [Harshavardhanan](https://www.pragmaticbyharsh.com).
 
 Single-page static site. No build step. No framework. No JavaScript.
 
