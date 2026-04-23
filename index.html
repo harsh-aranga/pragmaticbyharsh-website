@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Harshavardhanan Deekeswar</title>
+  <meta name="description" content="Building at the intersection of distributed systems and AI. Distributed Architect, Independent Researcher. Fifteen years at telecom and logistics scale. Published research on LLM token efficiency (ONTO, arXiv:2604.17512). Ex-Verizon." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Harshavardhanan Deekeswar" />
+  <meta property="og:description" content="Building at the intersection of distributed systems and AI. Published research on LLM token efficiency." />
+  <meta property="og:url" content="https://www.pragmaticbyharsh.com" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Harshavardhanan Deekeswar" />
+  <meta name="twitter:description" content="Building at the intersection of distributed systems and AI. Published research on LLM token efficiency." />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="canonical" href="https://www.pragmaticbyharsh.com" />
+
+  <!-- Theme loader: runs before paint to prevent flash -->
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+      } catch (e) { /* localStorage blocked, fall back to prefers-color-scheme */ }
+    })();
+  </script>
+
+  <style>
+    /* ---- Brand tokens: light (default) ---- */
+    :root {
+      --bg-primary: #f6f8fa;
+      --bg-surface: #ffffff;
+      --border-primary: #d0d7de;
+      --border-secondary: #afb8c1;
+      --text-primary: #1f2328;
+      --text-body: #424a53;
+      --text-muted: #6e7781;
+      --text-tertiary: #8c959f;
+      --accent-blue: #0969da;
+      --accent-green: #0a7a34;
+      --accent-green-bg: rgba(10, 122, 52, 0.15);
+
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+
+      --max-prose: 72ch;
+    }
+
+    /* Dark via system preference (when no explicit user choice) */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #0d1117;
+        --bg-surface: #161b22;
+        --border-primary: #21262d;
+        --border-secondary: #30363d;
+        --text-primary: #e6edf3;
+        --text-body: #c9d1d9;
+        --text-muted: #8b949e;
+        --text-tertiary: #484f58;
+        --accent-blue: #58a6ff;
+        --accent-green: #3fb950;
+        --accent-green-bg: rgba(63, 185, 80, 0.18);
+      }
+    }
+
+    /* Dark via explicit user choice */
+    :root[data-theme="dark"] {
+      --bg-primary: #0d1117;
+      --bg-surface: #161b22;
+      --border-primary: #21262d;
+      --border-secondary: #30363d;
+      --text-primary: #e6edf3;
+      --text-body: #c9d1d9;
+      --text-muted: #8b949e;
+      --text-tertiary: #484f58;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-green-bg: rgba(63, 185, 80, 0.18);
+    }
+
+    /* ---- Reset ---- */
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; padding: 0; }
+
+    html {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      line-height: 1.75;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-body);
+      min-height: 100vh;
+      padding: 56px 56px 96px;
+    }
+
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* ---- Links ---- */
+    a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+
+    a:hover {
+      border-bottom-color: var(--accent-blue);
+    }
+
+    /* ---- Top header strip ---- */
+    .top-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 112px;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .wordmark {
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: var(--text-primary);
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .top-nav {
+      display: flex;
+      gap: 24px;
+      font-size: 15px;
+      letter-spacing: 1.5px;
+    }
+
+    .top-nav a {
+      color: var(--text-primary);
+      padding-bottom: 2px;
+    }
+
+    .top-nav a:hover {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+    }
+
+    /* ---- Theme toggle ---- */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border-primary);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .theme-toggle:hover {
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    /* ---- Hero block ---- */
+    h1 {
+      font-family: var(--font-mono);
+      font-size: 52px;
+      font-weight: 500;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+
+    .underline {
+      width: 120px;
+      height: 2px;
+      background: var(--accent-blue);
+      margin-bottom: 32px;
+    }
+
+    .tagline {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .descriptor {
+      font-size: 16px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      margin-bottom: 32px;
+    }
+
+    /* ---- Currently (under descriptor) ---- */
+    .currently {
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: var(--max-prose);
+      border-left: 3px solid var(--accent-green);
+      padding: 6px 0 6px 20px;
+    }
+
+    .current-label {
+      display: inline-block;
+      color: var(--accent-green);
+      background: var(--accent-green-bg);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 10px;
+      vertical-align: baseline;
+    }
+
+    .current-text {
+      color: var(--text-body);
+    }
+
+    /* ---- Prose ---- */
+    .prose {
+      margin-top: 64px;
+    }
+
+    .prose p {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-body);
+      max-width: var(--max-prose);
+      margin-bottom: 28px;
+    }
+
+    .prose p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ---- Section block ---- */
+    .section-block {
+      margin-top: 112px;
+    }
+
+    .section-rule {
+      height: 1px;
+      width: 100%;
+      max-width: var(--max-prose);
+      background: var(--border-primary);
+      margin-bottom: 48px;
+    }
+
+    .squares {
+      display: inline-flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .squares span {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      background: var(--accent-blue);
+    }
+
+    .squares span.sq2 { opacity: 0.5; }
+    .squares span.sq3 { opacity: 0.25; }
+
+    .section-heading {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+
+    .section-heading-underline {
+      width: 72px;
+      height: 2px;
+      background: var(--accent-blue);
+      margin-bottom: 48px;
+    }
+
+    /* ---- Work items ---- */
+    .work-item {
+      margin-bottom: 40px;
+    }
+
+    .work-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .work-year {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .work-title {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .work-desc {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text-body);
+      max-width: 62ch;
+      margin-bottom: 12px;
+    }
+
+    .work-links {
+      font-size: 13px;
+      letter-spacing: 1.5px;
+    }
+
+    /* ---- Beyond Code ---- */
+    .beyond-list {
+      list-style: none;
+    }
+
+    .beyond-list li {
+      display: block;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text-body);
+      margin-bottom: 14px;
+      max-width: 62ch;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .beyond-square {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--text-muted);
+      position: absolute;
+      left: 0;
+      top: 10px;
+    }
+
+    .beyond-list em {
+      font-style: italic;
+      color: var(--text-body);
+    }
+
+    .beyond-closer {
+      margin-top: 28px;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 62ch;
+    }
+
+    /* ---- Contact zone ---- */
+    .contact-block {
+      margin-top: 112px;
+    }
+
+    .link-row {
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 56px;
+    }
+
+    .link-row a {
+      margin: 0 2px;
+    }
+
+    .footer {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--text-tertiary);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 640px) {
+      body {
+        padding: 32px 24px 64px;
+      }
+
+      .top-strip {
+        margin-bottom: 72px;
+      }
+
+      .top-right {
+        gap: 16px;
+      }
+
+      .top-nav {
+        gap: 16px;
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 36px;
+        letter-spacing: -1px;
+      }
+
+      .tagline {
+        font-size: 19px;
+      }
+
+      .descriptor {
+        font-size: 14px;
+      }
+
+      .currently {
+        font-size: 15px;
+      }
+
+      .prose,
+      .section-block,
+      .contact-block {
+        margin-top: 72px;
+      }
+
+      .prose {
+        margin-top: 56px;
+      }
+
+      .prose p {
+        font-size: 15px;
+      }
+
+      .work-title {
+        font-size: 19px;
+      }
+
+      .work-desc {
+        font-size: 15px;
+      }
+
+      .beyond-list li {
+        font-size: 15px;
+      }
+
+      .link-row {
+        font-size: 14px;
+      }
+
+      .theme-toggle {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .top-nav {
+        gap: 12px;
+      }
+
+      .descriptor {
+        font-size: 13px;
+        letter-spacing: 1px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Top strip: wordmark + nav + theme toggle -->
+  <div class="top-strip">
+    <div class="wordmark">hv</div>
+    <div class="top-right">
+      <nav class="top-nav" aria-label="Primary">
+        <a href="https://github.com/harsh-aranga" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/harshavardhanan2990" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://arxiv.org/abs/2604.17512" target="_blank" rel="noopener">arXiv</a>
+        <a href="https://blog.pragmaticbyharsh.com" target="_blank" rel="noopener">Writing</a>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme">
+        <span id="theme-label">Theme</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <h1>Harshavardhanan Deekeswar</h1>
+  <div class="underline"></div>
+  <p class="tagline">Building at the intersection of distributed systems and AI</p>
+  <p class="descriptor">Distributed Architect · Independent Researcher · Ex-Verizon · 15 years</p>
+
+  <div class="currently">
+    <span class="current-label">Currently</span><span class="current-text">working on Ratatoskr, a system for composing agent tool chains from natural language intent, backed by a self-extending schema-compatibility graph.</span>
+  </div>
+
+  <!-- Prose -->
+  <section class="prose" aria-label="About">
+    <p>I build distributed systems. Fifteen years of it, most recently as Principal Architect at Verizon, working on network graph intelligence and integrating LLMs into operational tooling. Before that, architecture and delivery roles at Cognizant, TCS, and HCL across telecom, manufacturing, and insurance.</p>
+
+    <p>My focus now is production AI and token economics. In production AI, I work on the parts that matter after the MVP: reliability, latency budgets, evaluation, and failure modes. In token economics, I work on where tokens actually go, what they cost, and which optimizations hold up under real load. Fifteen years of distributed systems habits carry over directly.</p>
+
+    <p>I published <a href="https://arxiv.org/abs/2604.17512" target="_blank" rel="noopener">ONTO</a> earlier this year (arXiv:2604.17512). It's a columnar serialization format built for LLM input. Existing formats were designed for services exchanging documents. That assumption breaks when the consumer is a language model reading thousands of records under a token budget. ONTO treats LLM input as its own problem and reduces token usage by 46 to 51 percent versus JSON, with no measurable loss in accuracy.</p>
+
+    <p>I also write a <a href="https://blog.pragmaticbyharsh.com/series/ai-tokens" target="_blank" rel="noopener">research series</a> on token economics in production. One recent piece of mine documents an undocumented behavior in OpenAI's API: prefix caches shared across model generations. At scale, this changes what you pay.</p>
+
+    <p>And I built an open-source <a href="https://github.com/harsh-aranga/ai-engineering-bootcamp" target="_blank" rel="noopener">AI Engineering Bootcamp</a>. Ten weeks, production-focused, covering RAG, agents, LLMOps, observability, evaluation, and multi-agent patterns. I built it because it's the course I would have wanted when I started focusing on production AI.</p>
+
+    <p>Open to senior and staff roles. Remote or hybrid.</p>
+  </section>
+
+  <!-- Selected Work -->
+  <section class="section-block" aria-label="Selected Work">
+    <div class="section-rule"></div>
+    <div class="squares">
+      <span class="sq1"></span><span class="sq2"></span><span class="sq3"></span>
+    </div>
+    <h2 class="section-heading">Selected Work</h2>
+    <div class="section-heading-underline"></div>
+
+    <article class="work-item">
+      <div class="work-year">2026</div>
+      <h3 class="work-title">ONTO</h3>
+      <p class="work-desc">Columnar notation for LLM input. Published research on token efficiency.</p>
+      <div class="work-links">
+        <a href="https://arxiv.org/abs/2604.17512" target="_blank" rel="noopener">arXiv</a>
+        ·
+        <a href="https://github.com/harsh-aranga/onto" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </article>
+
+    <article class="work-item">
+      <div class="work-year">2025</div>
+      <h3 class="work-title">AI Engineering Bootcamp</h3>
+      <p class="work-desc">10-week curriculum covering RAG, agents, LLMOps, and production patterns.</p>
+      <div class="work-links">
+        <a href="https://github.com/harsh-aranga/ai-engineering-bootcamp" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </article>
+
+    <article class="work-item">
+      <div class="work-year">2025 &mdash; ongoing</div>
+      <h3 class="work-title">Token Economics Research</h3>
+      <p class="work-desc">Empirical series measuring where tokens go in production LLM systems.</p>
+      <div class="work-links">
+        <a href="https://blog.pragmaticbyharsh.com/series/ai-tokens" target="_blank" rel="noopener">Read the series</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- Beyond Code -->
+  <section class="section-block" aria-label="Beyond Code">
+    <div class="section-rule"></div>
+    <div class="squares">
+      <span class="sq1"></span><span class="sq2"></span><span class="sq3"></span>
+    </div>
+    <h2 class="section-heading">Beyond Code</h2>
+    <div class="section-heading-underline"></div>
+
+    <ul class="beyond-list">
+      <li><span class="beyond-square" aria-hidden="true"></span>Chennai-based.</li>
+      <li><span class="beyond-square" aria-hidden="true"></span>Likes black coffee for work, <em>loves</em> Indian chai for everything else.</li>
+      <li><span class="beyond-square" aria-hidden="true"></span>Drawn to historical architecture, which is probably what made me an architect.</li>
+      <li><span class="beyond-square" aria-hidden="true"></span>Strategy game addict. Always RTS over TBS.</li>
+      <li><span class="beyond-square" aria-hidden="true"></span>Believes boring is beautiful because stable is peace. But enjoys the occasional chaos.</li>
+      <li><span class="beyond-square" aria-hidden="true"></span>Long walks on beaches are where I debug both life and software.</li>
+    </ul>
+
+    <p class="beyond-closer">Work is serious. Life doesn't have to be.</p>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-block" aria-label="Contact">
+    <div class="section-rule"></div>
+    <div class="link-row">
+      <a href="mailto:harsh@pragmaticbyharsh.com">Email</a>
+      ·
+      <a href="https://www.linkedin.com/in/harshavardhanan2990" target="_blank" rel="noopener">LinkedIn</a>
+      ·
+      <a href="https://github.com/harsh-aranga" target="_blank" rel="noopener">GitHub</a>
+      ·
+      <a href="https://arxiv.org/abs/2604.17512" target="_blank" rel="noopener">arXiv</a>
+      ·
+      <a href="https://blog.pragmaticbyharsh.com" target="_blank" rel="noopener">Hashnode</a>
+    </div>
+    <p class="footer">&copy; 2026 Harshavardhanan Deekeswar</p>
+  </section>
+
+</div>
+
+<!-- Theme toggle script -->
+<script>
+  (function() {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme-toggle');
+    var label = document.getElementById('theme-label');
+
+    function currentTheme() {
+      var stored = null;
+      try { stored = localStorage.getItem('theme'); } catch (e) {}
+      if (stored === 'light' || stored === 'dark') return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function updateLabel() {
+      var theme = currentTheme();
+      // Label shows what clicking will do (the opposite of current)
+      label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    }
+
+    btn.addEventListener('click', function() {
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      updateLabel();
+    });
+
+    updateLabel();
+  })();
+</script>
+
+</body>
+</html>
