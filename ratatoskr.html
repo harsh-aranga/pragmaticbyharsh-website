@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Ratatoskr — Harshavardhanan Deekeswar</title>
+
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive" />
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+    <!-- Theme loader: runs before paint to prevent flash -->
+    <script>
+        (function() {
+          try {
+            var stored = localStorage.getItem('theme');
+            if (stored === 'light' || stored === 'dark') {
+              document.documentElement.setAttribute('data-theme', stored);
+            }
+          } catch (e) { /* localStorage blocked, fall back to prefers-color-scheme */ }
+        })();
+    </script>
+
+    <style>
+        /* ---- Brand tokens: light (default) ---- */
+        :root {
+          --bg-primary: #f6f8fa;
+          --bg-surface: #ffffff;
+          --border-primary: #d0d7de;
+          --border-secondary: #afb8c1;
+          --text-primary: #1f2328;
+          --text-body: #424a53;
+          --text-muted: #6e7781;
+          --text-tertiary: #8c959f;
+          --accent-blue: #0969da;
+          --accent-green: #0a7a34;
+          --accent-green-bg: rgba(10, 122, 52, 0.15);
+          --code-bg: #eff1f3;
+          --code-border: #d0d7de;
+
+          --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+          --radius-sm: 4px;
+          --radius-md: 6px;
+          --radius-lg: 8px;
+
+          --max-prose: 690px;
+        }
+
+        /* Dark via system preference (when no explicit user choice) */
+        @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+            --bg-primary: #0d1117;
+            --bg-surface: #161b22;
+            --border-primary: #21262d;
+            --border-secondary: #30363d;
+            --text-primary: #e6edf3;
+            --text-body: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-tertiary: #484f58;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-green-bg: rgba(63, 185, 80, 0.18);
+            --code-bg: #161b22;
+            --code-border: #30363d;
+          }
+        }
+
+        /* Dark via explicit user choice */
+        :root[data-theme="dark"] {
+          --bg-primary: #0d1117;
+          --bg-surface: #161b22;
+          --border-primary: #21262d;
+          --border-secondary: #30363d;
+          --text-primary: #e6edf3;
+          --text-body: #c9d1d9;
+          --text-muted: #8b949e;
+          --text-tertiary: #484f58;
+          --accent-blue: #58a6ff;
+          --accent-green: #3fb950;
+          --accent-green-bg: rgba(63, 185, 80, 0.18);
+          --code-bg: #161b22;
+          --code-border: #30363d;
+        }
+
+        /* ---- Reset ---- */
+        *, *::before, *::after { box-sizing: border-box; }
+        * { margin: 0; padding: 0; }
+
+        html {
+          font-family: var(--font-mono);
+          font-size: 16px;
+          line-height: 1.75;
+          -webkit-text-size-adjust: 100%;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+          background: var(--bg-primary);
+          color: var(--text-body);
+          min-height: 100vh;
+          padding: 56px 56px 96px;
+        }
+
+        .page {
+          max-width: 780px;
+          margin: 0 auto;
+        }
+
+        /* ---- Links ---- */
+        a {
+          color: var(--accent-blue);
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: border-color 0.15s ease;
+        }
+
+        a:hover {
+          border-bottom-color: var(--accent-blue);
+        }
+
+        /* ---- Top header strip ---- */
+        .top-strip {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 80px;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+
+        .wordmark {
+          font-size: 17px;
+          font-weight: 500;
+          letter-spacing: 3px;
+          color: var(--text-primary);
+        }
+
+        .wordmark a {
+          color: var(--text-primary);
+          border-bottom: none;
+        }
+
+        .wordmark a:hover {
+          color: var(--accent-blue);
+        }
+
+        .top-right {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+
+        .top-nav {
+          display: flex;
+          gap: 24px;
+          font-size: 15px;
+          letter-spacing: 1.5px;
+        }
+
+        .top-nav a {
+          color: var(--text-primary);
+          padding-bottom: 2px;
+        }
+
+        .top-nav a:hover {
+          color: var(--accent-blue);
+          border-bottom-color: var(--accent-blue);
+        }
+
+        /* ---- Theme toggle ---- */
+        .theme-toggle {
+          background: transparent;
+          border: 1px solid var(--border-primary);
+          color: var(--text-muted);
+          font-family: var(--font-mono);
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          padding: 6px 12px;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: color 0.15s, border-color 0.15s;
+        }
+
+        .theme-toggle:hover {
+          color: var(--accent-blue);
+          border-color: var(--accent-blue);
+        }
+
+        /* ---- Doc header ---- */
+        .doc-eyebrow {
+          font-size: 12px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: var(--accent-blue);
+          margin-bottom: 16px;
+        }
+
+        h1 {
+          font-family: var(--font-mono);
+          font-size: 42px;
+          font-weight: 500;
+          letter-spacing: -1.5px;
+          line-height: 1.15;
+          color: var(--text-primary);
+          margin-bottom: 20px;
+        }
+
+        .underline {
+          width: 120px;
+          height: 2px;
+          background: var(--accent-blue);
+          margin-bottom: 24px;
+        }
+
+        .doc-byline {
+          font-size: 14px;
+          color: var(--text-muted);
+          letter-spacing: 1.5px;
+          margin-bottom: 56px;
+        }
+
+        /* ---- Section headings ---- */
+        h2 {
+          font-family: var(--font-mono);
+          font-size: 22px;
+          font-weight: 500;
+          letter-spacing: -0.5px;
+          color: var(--text-primary);
+          margin-top: 64px;
+          margin-bottom: 8px;
+          max-width: var(--max-prose);
+        }
+
+        h2 + .h-rule {
+          width: 60px;
+          height: 2px;
+          background: var(--accent-blue);
+          margin-bottom: 32px;
+        }
+
+        h3 {
+          font-family: var(--font-mono);
+          font-size: 17px;
+          font-weight: 500;
+          color: var(--text-primary);
+          margin-top: 36px;
+          margin-bottom: 12px;
+          max-width: var(--max-prose);
+        }
+
+        /* ---- Body prose ---- */
+        p {
+          font-size: 16px;
+          line-height: 1.75;
+          color: var(--text-body);
+          max-width: var(--max-prose);
+          margin-bottom: 24px;
+        }
+
+        p strong, li strong {
+          color: var(--text-primary);
+          font-weight: 500;
+        }
+
+        p em, li em {
+          font-style: italic;
+          color: var(--text-body);
+        }
+
+        p code, li code {
+          font-family: var(--font-mono);
+          font-size: 14px;
+          background: var(--code-bg);
+          border: 1px solid var(--code-border);
+          border-radius: 3px;
+          padding: 1px 5px;
+          color: var(--text-primary);
+        }
+
+        /* ---- Lists ---- */
+        ul, ol {
+          max-width: var(--max-prose);
+          margin-bottom: 24px;
+          padding-left: 0;
+          list-style: none;
+        }
+
+        li {
+          font-size: 16px;
+          line-height: 1.75;
+          color: var(--text-body);
+          margin-bottom: 12px;
+          padding-left: 22px;
+          position: relative;
+        }
+
+        li::before {
+          content: "";
+          display: inline-block;
+          width: 5px;
+          height: 5px;
+          background: var(--text-muted);
+          position: absolute;
+          left: 4px;
+          top: 12px;
+        }
+
+        /* ---- Section divider ---- */
+        .section-divider {
+          width: 100%;
+          max-width: var(--max-prose);
+          height: 1px;
+          background: var(--border-primary);
+          margin: 72px 0 0 0;
+        }
+
+        /* ---- Code blocks ---- */
+        pre.code-block {
+          font-family: var(--font-mono);
+          font-size: 13px;
+          line-height: 1.6;
+          background: var(--code-bg);
+          border: 1px solid var(--code-border);
+          border-radius: var(--radius-md);
+          padding: 16px 18px;
+          margin-bottom: 28px;
+          max-width: var(--max-prose);
+          width: 100%;
+          color: var(--text-primary);
+          white-space: pre-wrap;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          overflow-x: hidden;
+        }
+
+        /* ---- Mermaid containers ---- */
+        .mermaid-wrapper {
+          max-width: var(--max-prose);
+          margin: 0 0 32px 0;
+          border: 1px solid var(--border-primary);
+          border-radius: var(--radius-md);
+          background: var(--bg-surface);
+          padding: 20px;
+          position: relative;
+          cursor: zoom-in;
+          overflow-x: auto;
+        }
+
+        .mermaid-wrapper:hover {
+          border-color: var(--accent-blue);
+        }
+
+        .mermaid {
+          text-align: center;
+          min-height: 40px;
+        }
+
+        .zoom-hint {
+          position: absolute;
+          top: 8px;
+          right: 10px;
+          font-size: 10px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          color: var(--text-tertiary);
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+
+        .mermaid-wrapper:hover .zoom-hint {
+          opacity: 1;
+        }
+
+        /* ---- Modal for fullscreen diagram ---- */
+        .modal-backdrop {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(13, 17, 23, 0.97);
+          z-index: 9999;
+          align-items: center;
+          justify-content: center;
+          padding: 40px;
+          cursor: zoom-out;
+        }
+
+        .modal-backdrop.open {
+          display: flex;
+        }
+
+        .modal-svg-container {
+          width: 100%;
+          height: 100%;
+          max-width: 100%;
+          max-height: 100%;
+          background: var(--bg-surface);
+          border: 1px solid var(--border-primary);
+          border-radius: var(--radius-md);
+          box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+          padding: 24px;
+          overflow: auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          touch-action: pinch-zoom;
+        }
+
+        .modal-svg-container svg {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          min-width: 0;
+          min-height: 0;
+          display: block;
+          flex-shrink: 1;
+        }
+
+        .modal-close {
+          position: fixed;
+          top: 16px;
+          right: 20px;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          color: rgba(255, 255, 255, 0.85);
+          font-family: var(--font-mono);
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          padding: 6px 12px;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: color 0.15s, border-color 0.15s;
+          z-index: 10000;
+        }
+
+        .modal-close:hover {
+          color: #ffffff;
+          border-color: #ffffff;
+        }
+
+        /* ---- Footer ---- */
+        .doc-footer {
+          margin-top: 96px;
+          padding-top: 32px;
+          border-top: 1px solid var(--border-primary);
+          max-width: var(--max-prose);
+        }
+
+        .footer-note {
+          font-style: italic;
+          font-size: 14px;
+          color: var(--text-muted);
+          margin-bottom: 24px;
+        }
+
+        .back-link {
+          font-size: 14px;
+          letter-spacing: 1.5px;
+          color: var(--text-muted);
+        }
+
+        .back-link a {
+          color: var(--text-muted);
+        }
+
+        .back-link a:hover {
+          color: var(--accent-blue);
+          border-bottom-color: var(--accent-blue);
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 640px) {
+          body {
+            padding: 32px 24px 64px;
+          }
+
+          .top-strip {
+            margin-bottom: 56px;
+          }
+
+          .top-right {
+            gap: 16px;
+          }
+
+          .top-nav {
+            gap: 16px;
+            font-size: 14px;
+          }
+
+          h1 {
+            font-size: 30px;
+            letter-spacing: -1px;
+          }
+
+          .doc-byline {
+            font-size: 13px;
+            margin-bottom: 40px;
+          }
+
+          h2 {
+            font-size: 19px;
+            margin-top: 48px;
+          }
+
+          h3 {
+            font-size: 16px;
+            margin-top: 28px;
+          }
+
+          p, li {
+            font-size: 15px;
+          }
+
+          pre.code-block {
+            font-size: 12px;
+            padding: 14px;
+          }
+
+          .mermaid-wrapper {
+            padding: 14px;
+          }
+
+          .theme-toggle {
+            padding: 5px 10px;
+            font-size: 12px;
+          }
+
+          .section-divider {
+            margin-top: 56px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          h1 {
+            font-size: 26px;
+          }
+
+          .top-nav {
+            gap: 12px;
+          }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- Top strip: wordmark + nav + theme toggle -->
+    <div class="top-strip">
+        <div class="wordmark"><a href="/">hv</a></div>
+        <div class="top-right">
+            <nav class="top-nav" aria-label="Primary">
+                <a href="/">Home</a>
+                <a href="https://github.com/harsh-aranga" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://arxiv.org/abs/2604.17512" target="_blank" rel="noopener">arXiv</a>
+            </nav>
+            <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme">
+                <span id="theme-label">Theme</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Doc header -->
+    <div class="doc-eyebrow">Design Doc</div>
+    <h1>Ratatoskr: Compositional Tool Retrieval at Organizational Scale</h1>
+    <div class="underline"></div>
+    <p class="doc-byline">Harshavardhanan Deekeswar &middot; April 2026</p>
+
+    <!-- Section 1 -->
+    <h2>1. The Problem</h2>
+    <div class="h-rule"></div>
+
+    <p>Inside any large organization today, agents and tools are accumulating across teams. The customer experience team is building support agents. The finance team is exposing billing tools. Logistics is wrapping its tracking systems. Operations is automating ticket creation. Each team builds against its own conventions, its own vocabulary, its own sense of what a customer is and what a transaction looks like. Individually, each tool works. The promise of agent ecosystems is that these tools combine into workflows that cross those team boundaries, so that a single intent like "find customers with shipping delays and open billing disputes" can be served by composing tools that no single team owns.</p>
+
+    <p>That promise breaks at scale.</p>
+
+    <p>The breakage isn't in any individual tool. It sits in the seams between them. When a workflow needs the logistics team's shipment tracker to feed the finance team's billing query, something has to decide that the tracker's <code>customer_ref</code> and the billing system's <code>customer_id</code> are the same thing, and that the type alignment isn't enough on its own. Today, that decision is either hand-wired by a developer who happens to know both systems, or fuzzy-matched at runtime by an LLM with no organizational context. Hand-wiring works at five tools. It collapses at five hundred.</p>
+
+    <p>Five hundred is not a hypothetical. Internal API counts at large organizations cross that threshold routinely; agent counts are heading the same direction faster, because every team that built APIs is now building agents on top of them. The composition surface across that scale isn't a single team's coordination problem. It is an organizational problem, and it is shaped by the same forces that make any organizational integration hard: teams that evolved independently, vocabularies that drifted apart, mergers that fused incompatible models, domain experts who left, and the absence of any authoritative answer to questions like "what is a customer." A workflow that crosses three teams crosses three vocabularies. A workflow that crosses three business units in a conglomerate may cross three different definitions of the entities it operates on.</p>
+
+    <p>The available standards don't help. OpenAI's function calling, Anthropic's tool format, and the Model Context Protocol all describe what a tool <em>takes as input</em>: name, parameters, types, descriptions. None of them describe what a tool <em>outputs</em>, let alone what its output fields <em>mean</em>. The downstream LLM is expected to figure that out from context. That is tractable for a single tool call. It is not tractable for a graph of tools where outputs feed inputs across team boundaries, semantic conventions, and domain models that nobody agreed on in advance.</p>
+
+    <p>The cost of getting this wrong scales with the workflow. A misjoined field in a casual workflow produces a confused user. A misjoined field in a workflow that triggers refunds, dispatches technicians, or sends customer communications produces operational damage that takes weeks to detect and longer to unwind. At organizational scale, silent semantic mismatches are not edge cases. They are the failure mode.</p>
+
+    <p>Most organizations don't feel this acutely yet because they're still in the five-tools, single-team, single-vocabulary phase. The architectural decisions made in that phase determine whether the five-hundred-tool, multi-team, heterogeneous-vocabulary phase is solvable or whether the organization spends its agent budget rebuilding the same connective tissue that every other organization is also rebuilding, badly, in parallel. The window to make those decisions well is now, before the substrate ossifies.</p>
+
+    <p>This paper describes a system for compositional tool retrieval at organizational scale across heterogeneous agent networks. We call it Ratatoskr.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 2 -->
+    <h2>2. Why Now, Why This Is Hard</h2>
+    <div class="h-rule"></div>
+
+    <p>Three structural failures show up wherever organizations try to compose tools across teams.</p>
+
+    <p><strong>Schema mismatch.</strong> Tools built by different teams use different conventions. One team's <code>user_id</code> is another team's <code>account_number</code> is another team's <code>subscriber_ref</code>. The types may align, all strings, all roughly UUIDs, but type alignment doesn't establish meaning.</p>
+
+    <p><strong>Semantic drift.</strong> Even when field names match, meanings diverge. A telecom organization with M&amp;A history (the Verizon shape) has billing systems where <code>customer_id</code> means the entity being billed, and network operations systems where <code>customer_id</code> means the technical account associated with installed equipment. Both are valid. Both are different. A workflow that silently treats them as interchangeable produces wrong answers in cases nobody catches.</p>
+
+    <p><strong>Discoverability.</strong> At fifty tools, an architect can hold the catalog in their head. At five hundred, nobody knows what exists. Workflows get hand-built around the tools the author happens to remember. Better tools sit unused. Duplicate tools get built because the existing one wasn't found.</p>
+
+    <p>These problems compound. Schema mismatch and semantic drift make the existing tools harder to combine. Discoverability failure makes the right tools invisible. The result is that agent ecosystems get <em>worse</em> as they grow, not better. Past a threshold, adding tools subtracts utility.</p>
+
+    <p>The available approaches don't solve any of this:</p>
+
+    <ul>
+        <li><strong>Function calling specs</strong> (OpenAI, Anthropic) describe inputs to a single tool. There is no notion of output schema, output semantics, or composition. Each call is independent.</li>
+        <li><strong>MCP</strong> improves on this by giving tools a richer registration protocol, but it remains input-shaped. Tools advertise what they accept, not what they emit, and certainly not what their outputs mean.</li>
+        <li><strong>Agent frameworks</strong> (LangChain, LangGraph, Autogen) provide orchestration primitives, but assume the developer already knows which tools to use and how their outputs map to downstream inputs. They solve coordination, not discovery or compatibility.</li>
+        <li><strong>Manual orchestration</strong> (workflow builders, integration platforms) works for known flows but doesn't scale to dynamic composition based on user intent.</li>
+    </ul>
+
+    <p>What's missing is a <strong>substrate</strong>: a layer that captures not just tool signatures but tool semantics, and uses those semantics to make composition decisions tractable.</p>
+
+    <p>The same structural pattern shows up across organizational shapes. A diversified industrial conglomerate (the 3M shape) has divisions that evolved independently, each with its own customer model. A manufacturing-and-service business (the Cummins shape) has "customer" meaning the dealer in one context and the end-user in another, both valid, both incompatible if naively merged. A scientific instruments company (the Agilent shape) has domain vocabulary so specialized that ontology depth varies dramatically by sub-domain. None of these are insider observations. They are structural consequences of how organizations grow.</p>
+
+    <p>This problem is three to four years away from being acute for most organizations. That is exactly why the architecture matters now. By the time the problem is undeniable, the organizations that built composability into their substrate will be moving while the ones that didn't are rebuilding.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 3 -->
+    <h2>3. System Overview</h2>
+    <div class="h-rule"></div>
+
+    <p>Ratatoskr is a platform for organizational agent infrastructure. The full vision includes governance, orchestration runtime, security, agent versioning, and several other components. This paper covers one of those: <strong>compositional tool retrieval</strong>.</p>
+
+    <p>The compositional retrieval component is organized in four layers.</p>
+
+    <div class="mermaid-wrapper" data-zoomable>
+        <span class="zoom-hint">Tap to zoom</span>
+        <pre class="mermaid">
+flowchart TB
+    subgraph Control["Control Layer"]
+        HITL["Human-in-the-Loop<br/>Edge Approval"]
+        FAIL["Failure Modes<br/>(Tiered Fallback)"]
+    end
+
+    subgraph Reasoning["Reasoning Layer"]
+        GRAPH["Schema-Compatibility Graph<br/>(Self-Extending)"]
+        PLAN["Composition Planner<br/>(5-Tier)"]
+        RANK["Path Ranker"]
+    end
+
+    subgraph Discovery["Discovery Layer"]
+        STORE["Tool Registry<br/>(Vector Store)"]
+        RETRIEVE["Semantic Retrieval"]
+        INTENT["Intent Parser"]
+    end
+
+    subgraph Representation["Representation Layer"]
+        FORMAT["Canonical Tool<br/>Description Format"]
+        ONTO["Ontology Service"]
+        TRANS["Translator Layer<br/>(OpenAI / Anthropic / MCP)"]
+    end
+
+    Representation --> Discovery
+    Discovery --> Reasoning
+    Reasoning --> Control
+    Control -.feedback.-> Reasoning
+    </pre>
+    </div>
+
+    <p><strong>Representation Layer</strong> captures what tools are. The canonical tool description format records inputs, outputs, and output field semantics. The ontology service resolves field meanings against an organizational concept model. The translator layer maps the canonical format bidirectionally to vendor formats so tools registered in any standard can participate.</p>
+
+    <p><strong>Discovery Layer</strong> finds tools relevant to an intent. The intent parser converts natural language to a structured query. Semantic retrieval against the tool registry produces a candidate set. The vector store backs this layer.</p>
+
+    <p><strong>Reasoning Layer</strong> decides how candidate tools combine. The schema-compatibility graph filters candidates by which tools can actually feed each other based on output-input compatibility. The composition planner emits a single plan, with confidence gating its shape. The path ranker picks among multiple candidate paths.</p>
+
+    <p><strong>Control Layer</strong> enforces correctness boundaries. Human-in-the-loop approval gates any new graph edges proposed by the LLM. Tiered failure modes ensure the system fails honestly rather than emitting plans it can't justify.</p>
+
+    <p>This paper covers compositional retrieval. The broader Ratatoskr vision, which includes the governance engine, orchestration runtime, security layer, agent versioning, and observability, is part of Ratatoskr's roadmap but out of scope here.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 4 -->
+    <h2>4. End-to-End Flow</h2>
+    <div class="h-rule"></div>
+
+    <p>A user expresses an intent. Ratatoskr produces a plan, or fails honestly. The path between is the following sequence.</p>
+
+    <div class="mermaid-wrapper" data-zoomable>
+        <span class="zoom-hint">Tap to zoom</span>
+        <pre class="mermaid">
+sequenceDiagram
+    actor User
+    participant IP as Intent Parser
+    participant R as Retrieval
+    participant G as Graph Layer
+    participant O as Ontology Service
+    participant PR as Path Ranker
+    participant CP as Composition Planner
+    participant H as Human Approver
+
+    User->>IP: Natural language intent
+    IP->>R: Structured query (input state, goal state)
+    R->>R: Semantic similarity over tool registry
+    R->>G: Candidate tool set
+    G->>O: Resolve field anchors for compatibility
+    O->>G: Concept equivalence + class hierarchy
+    G->>G: Filter by schema + semantic compatibility
+
+    alt Pre-existing graph edges cover the path
+        G->>CP: Candidate paths (high confidence)
+    else Edges missing, ontology anchors present
+        G->>O: Check anchor equivalence
+        O->>G: Anchors match (high confidence proposal)
+        G->>CP: Path with proposed edges
+    else Edges missing, no ontology anchors
+        G->>G: LLM proposes edges from descriptions (low confidence)
+        G->>CP: Path with low-confidence proposals
+    end
+
+    CP->>PR: Multiple candidate paths
+    PR->>CP: Ranked path
+    CP->>CP: Determine planner tier
+
+    alt High confidence, full graph coverage
+        CP->>User: Plan emitted
+    else Partial coverage, edges need approval
+        CP->>H: Edge approval request
+        H->>G: Approved edges persisted
+        CP->>User: Plan emitted
+    else No path, low confidence
+        CP->>User: Honest failure with diagnostic
+    end
+    </pre>
+    </div>
+
+    <p>The intent parser produces a structured representation of the request: what state the workflow starts from, what state it should reach. Retrieval finds candidate tools whose descriptions match the structured query semantically.</p>
+
+    <p>The graph layer is where ontology becomes load-bearing. To decide whether one tool's output can feed another tool's input, the graph layer needs to know whether their fields refer to the same concept. It queries the ontology service to resolve field anchors, check class equivalence, and walk class hierarchies. Two fields anchored to the same ontology concept are compatible. Two fields anchored to equivalent concepts (a <code>BillingCustomer</code> and a <code>Customer</code> declared <code>equivalentTo</code>) are compatible. Hierarchy and subclass relationships are also resolved through the ontology, with full treatment in Section 6. The graph layer's compatibility decisions are grounded in these ontology resolutions, not in field name matching or fuzzy text comparison.</p>
+
+    <p>When pre-existing edges already establish a compatible path, the graph layer hands the candidate path directly to the composition planner. When edges are missing but both endpoints are ontology-anchored, the graph layer asks the ontology service whether the anchors are equivalent and produces a high-confidence edge proposal if they are. When edges are missing and the fields are not ontology-anchored, the graph layer falls back to LLM-driven proposal based on descriptions and aliases, marked as low-confidence.</p>
+
+    <p>The path ranker handles cases where multiple candidate paths exist. The composition planner classifies the situation into one of five tiers based on graph coverage and proposal confidence, and either emits a single plan or routes proposed edges to the human approval queue. Approved edges persist into the graph and become available for future queries.</p>
+
+    <p>The plan is emitted, not executed. Execution belongs to the orchestration runtime, which is a separate Ratatoskr component out of scope for this paper.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 5 -->
+    <h2>5. The Tool Description Format</h2>
+    <div class="h-rule"></div>
+
+    <p>The canonical tool description format is the registration substrate for Ratatoskr. It captures three things:</p>
+
+    <ul>
+        <li><strong>What the tool accepts as input.</strong> The standard surface that function calling specs already cover.</li>
+        <li><strong>What the tool emits as output.</strong> Currently absent from major specs.</li>
+        <li><strong>What each output field <em>means</em>.</strong> The part that makes composition tractable.</li>
+    </ul>
+
+    <p>The third responsibility is what existing formats miss. Without it, an output schema is just typed data: <code>{ shipment_id: string, destination_zip: string, estimated_delivery: string }</code>. A downstream tool that needs an address has no way to know whether <code>destination_zip</code> is the right field to use, whether it's complete, or whether the format conventions match what's expected. With output field semantics, each field carries enough metadata for the graph layer and the LLM to reason about compatibility before runtime.</p>
+
+    <h3>Three field sources</h3>
+
+    <p>Every field in the canonical format declares one of three sources:</p>
+
+    <ul>
+        <li><strong><code>ontology</code></strong>. The field is anchored to a concept defined in the organizational ontology. The format carries a reference to the concept (e.g., <code>Customer.cust_id</code>); descriptions, examples, and authoritative type info come from the ontology service. This is the preferred source.</li>
+        <li><strong><code>custom</code></strong>. The field has no ontology anchor. The author provides a description, optional aliases, and examples directly in the field definition. This is the fallback for fields not yet covered by the ontology, or for tool-local concepts that don't warrant promotion.</li>
+        <li><strong><code>operational</code></strong>. The field is system telemetry: execution time, request IDs, trace tokens, rate-limit headers, response timestamps. It's part of the tool's output but irrelevant to composition. The graph layer ignores operational fields when assessing compatibility.</li>
+    </ul>
+
+    <p>The distinction between <code>custom</code> and <code>operational</code> is not about the field's nature but about its <strong>composition relevance</strong>. Two tools that both emit <code>executionTimeInMs</code> should not have a graph edge proposed between them on that basis; the field is operational. Conversely, a <code>created_by</code> field might be operational in a customer lookup tool (just metadata) but domain-relevant in a compliance audit tool (the actual subject of the audit). At registration time, the LLM proposes an initial classification based on field names, descriptions, and the tool's stated purpose. The author reviews and confirms or overrides. This matches the human-in-the-loop pattern used throughout the system.</p>
+
+    <h3>Worked example: a single field across all three sources</h3>
+
+    <p>Consider a billing tool that emits a customer reference. The same conceptual field looks different depending on its source declaration.</p>
+
+    <p><strong>Ontology-anchored:</strong></p>
+
+    <pre class="code-block">field: cust_id
+source: ontology
+anchor: Customer.cust_id
+type: string
+example: "CUST-88421"
+optional: false</pre>
+
+    <p>The ontology service supplies the description, alias set, and authoritative type. The tool author writes nothing about meaning; the anchor handles it.</p>
+
+    <p><strong>Custom (no ontology anchor):</strong></p>
+
+    <pre class="code-block">field: cust_id
+source: custom
+description: "The customer placing the order. For B2B orders, this is the purchasing organization's ID, not the individual user."
+aliases: [customer_id, cust_ref, client_id]
+type: string
+example: "CUST-88421"
+optional: false</pre>
+
+    <p>The author carries the full burden of describing meaning. The field works, but it depends on the author's care and consistency.</p>
+
+    <p><strong>Operational:</strong></p>
+
+    <pre class="code-block">field: executionTimeInMs
+source: operational
+description: "Time taken to process the request, in milliseconds."
+type: integer
+example: 142
+optional: true</pre>
+
+    <p>Type and description for documentation. The graph layer ignores this field entirely.</p>
+
+    <h3>Registration paths</h3>
+
+    <p>Tools enter the registry through one of two paths.</p>
+
+    <p><strong>Direct canonical registration.</strong> The author writes the canonical format directly. They have full control over input schema, output schema, and field semantics. This is the preferred path for new tools.</p>
+
+    <p><strong>Vendor format registration.</strong> The author submits an existing tool spec in OpenAI's function format, Anthropic's tool format, MCP, or another vendor format. The translator layer extracts the input schema automatically. The output schema and field semantics must be supplied manually by the author, because vendor formats do not describe outputs and the LLM has no signal to fabricate them: a description like "returns customer details" tells nothing about whether the output has five fields or fifty, what types they have, or which concepts they map to in this organization. The author provides this information as part of registration.</p>
+
+    <p>In both paths, the registration flow is ontology-aware. The author declares which ontology classes the output is constructed from, and the registration interface offers type-aware anchoring suggestions for fields drawn from those classes' properties. The LLM proposes anchors, types, and domain-versus-operational classification; the author reviews and confirms.</p>
+
+    <h3>On custom fields</h3>
+
+    <p>Custom fields exist as a gradual-adoption fallback for fields not yet covered by the ontology. They are not the recommended path. The system makes anchored fields cheap to register and custom fields observably costly: registering a field as custom requires a justification (concept missing from ontology, tool-local computation, uncertain), custom field counts are tracked per tool and per author, and downstream composition over custom fields is slower because every edge requires fresh human approval. Anchored fields produce faster composition, fewer approvals, and higher graph reliability. The architecture rewards discipline rather than enforcing it through hard blocks, because hard blocks would make registration impossible during early ontology adoption when the ontology is still incomplete.</p>
+
+    <h3>Translator layer (emission direction)</h3>
+
+    <p>When a plan is generated and a downstream tool needs to be invoked, the translator produces the input payload in whatever vendor format the tool expects. This direction is lossless because the canonical format is a strict superset of vendor input formats. The plans Ratatoskr emits include field-level mappings that can be translated into native vendor calls without ambiguity.</p>
+
+    <p>The output side is canonical-only because no vendor format describes outputs. That gap is, in fact, the gap Ratatoskr's format exists to fill.</p>
+
+    <h3>Scope: JSON-only in V1</h3>
+
+    <p>The canonical format describes JSON-shaped inputs and outputs. Natural-language outputs are out of scope for V1. This is not a gap to apologize for; it is a deliberate scoping decision. NL-to-JSON or JSON-to-NL handoffs are an extraction problem, distinct from a composition problem. Where NL appears in a workflow, an extraction adapter (an LLM call that produces structured JSON from NL) is itself a tool that can register with Ratatoskr in the canonical format. The composition logic stays JSON-shaped; the NL adapter is just another node in the graph.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 6 -->
+    <h2>6. Ontology as Runtime Substrate</h2>
+    <div class="h-rule"></div>
+
+    <p>The format alone isn't enough. Author-declared semantics, descriptions, aliases, examples written by the tool author, work for small ecosystems and break at organizational scale, for the same reasons that schema-mismatch and semantic-drift break at scale: every author writes what makes sense to them, in their team's vocabulary, and the result is a patchwork of overlapping and conflicting micro-vocabularies.</p>
+
+    <p>The fix is an organizational ontology that defines concepts once, authoritatively, and makes those concepts available to tools at registration time. This isn't a new idea. Ontologies have existed for decades in domains like healthcare, finance, and manufacturing. They've largely failed to be useful, because they had no consumer; they were maintained as documentation projects, not as runtime infrastructure.</p>
+
+    <p>Ratatoskr is the consumer that makes the ontology load-bearing. Tools register against ontology concepts. The graph layer trusts ontology-anchored compatibility. The LLM reasons over a structured semantic model rather than fuzzy-matching prose. Ontology stops being a metadata graveyard and becomes the substrate that makes composition tractable.</p>
+
+    <h3>Ontology is part of Ratatoskr, not external</h3>
+
+    <p>Expecting organizations to build ontology infrastructure as a precondition for adopting Ratatoskr is a non-starter. The ontology service is therefore part of Ratatoskr itself. It ships with the platform and provides registration, lookup, and equivalence-resolution APIs. Organizations populate it with their concepts; they don't build the substrate. Bootstrap concepts (Customer, Order, Employee, Invoice, and similar near-universal entities) come pre-defined; organizations extend with domain-specific concepts.</p>
+
+    <h3>What the ontology contains</h3>
+
+    <div class="mermaid-wrapper" data-zoomable>
+        <span class="zoom-hint">Tap to zoom</span>
+        <pre class="mermaid">
+classDiagram
+    class Customer {
+        +cust_id: string
+        +created_date: date
+        +status: enum
+    }
+    class B2CCustomer {
+        +personal_email: string
+        +date_of_birth: date
+    }
+    class B2BCustomer {
+        +company_name: string
+        +tax_id: string
+        +purchasing_terms: string
+    }
+    class BillingCustomer {
+        +billing_address: string
+        +payment_method: string
+    }
+    class ShippingRecipient {
+        +shipping_address: string
+        +delivery_preferences: string
+    }
+
+    Customer &lt;|-- B2CCustomer
+    Customer &lt;|-- B2BCustomer
+    BillingCustomer ..&gt; Customer : equivalentTo
+    ShippingRecipient ..&gt; Customer : relatedTo
+
+    note for ShippingRecipient "Distinct concept in B2B contexts:&lt;br/&gt;recipient may not be billed party"
+    </pre>
+    </div>
+
+    <p>The ontology contains classes (Customer, Order, Employee, Equipment, Shipment, BillingHistory, and so on), each with <strong>data properties</strong> (the fields that belong to instances of that class) and <strong>object properties</strong> (relationships to other classes). Classes can form hierarchies. A B2CCustomer is a Customer, a B2BCustomer is a Customer, and both inherit properties from the parent class.</p>
+
+    <p>Two classes can be declared equivalent (<code>Customer</code> in the billing system is the same concept as <code>Customer</code> in the CRM, even though the systems track different attributes). Two classes that look similar can be declared distinct (<code>shipping.Customer</code> representing the recipient of a delivery is not the same concept as <code>billing.Customer</code>, in B2B contexts where the recipient and the billed party can differ). The ontology forces the organization to make these calls explicitly at modeling time, rather than letting them surface as silent bugs at runtime.</p>
+
+    <h3>Hard cases the ontology handles</h3>
+
+    <p><strong>Same concept, different field names across teams.</strong> Team A's <code>client_id</code>, Team B's <code>customer_ref</code>, Team C's <code>subscriber_id</code> all anchor to <code>Customer.cust_id</code> in the ontology. The graph layer treats them as compatible because the ontology says so.</p>
+
+    <p><strong>Different concepts, same name.</strong> <code>shipping.Customer</code> and <code>billing.Customer</code> have separate class definitions. A field anchored to one is not compatible with a field anchored to the other, even though both look like "the customer."</p>
+
+    <p><strong>Subclass variation.</strong> A tool built for <code>B2BCustomer</code> doesn't compose with a tool built for <code>B2CCustomer</code>, but a tool built for the root <code>Customer</code> class composes with both, because subclasses are-a Customer.</p>
+
+    <p><strong>Derived concepts.</strong> <code>Customer.tenure_years</code> is computed (<code>current_date - Customer.signup_date</code>). If the derivation is organizationally meaningful, where multiple tools across the organization want this concept, it gets promoted to a derived data property on the Customer class. If it's tool-local, it stays a custom field on the tool that needs it.</p>
+
+    <p><strong>Query-shape fields.</strong> A search tool has input fields like <code>start_date</code> and <code>end_date</code> for filtering BillingHistory records. These don't map directly to properties on BillingHistory. They map to <em>operations</em> on those properties. The format expresses this as a field anchored to <code>BillingHistory.billing_period_start</code> with a role annotation indicating filter semantics (<code>filter:gte</code>).</p>
+
+    <h3>What the ontology does not handle</h3>
+
+    <p>Operational fields, things like execution time, request IDs, trace tokens, don't belong in the ontology. They're system telemetry, not domain concepts. Forcing them in produces junk-drawer classes that pollute the ontology and reduce its usefulness. The format keeps operational fields outside the ontology entirely.</p>
+
+    <p>Tool-local computed values that no other tool needs also stay outside. Promoting every author's one-off derived field to the ontology defeats the point of having a shared model.</p>
+
+    <h3>Author-declared as gradual-adoption fallback</h3>
+
+    <p>Real ontologies are incomplete. They start small and grow as the organization formalizes its concepts. Ratatoskr accommodates this through the <code>custom</code> field source: fields not yet covered by the ontology can be registered with author-declared semantics. Composition over custom fields is heuristic. The LLM proposes edges based on prose matching, and every such edge requires fresh human approval, with no fast-path even for previously-seen patterns. This is part of the cost gradient described in Section 5: custom fields are allowed, tracked, and observably more expensive to compose with than anchored fields.</p>
+
+    <p>Over time, recurring custom concepts get promoted to the ontology, the corresponding fields get re-anchored, and the heuristic edges become deterministic ones. The format works across the gradient from "ontology covers nothing" to "ontology covers everything," and the organization migrates at its own pace.</p>
+
+    <p>This dual-mode design is part of what makes the system adoptable. Organizations don't need a complete ontology to start; they get value immediately and improve the substrate over time.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 7 -->
+    <h2>7. Storage and Retrieval</h2>
+    <div class="h-rule"></div>
+
+    <p>Tool descriptions registered in the canonical format are stored in a vector database for semantic retrieval. V1 uses Chroma. The storage interface is designed so the vector store is pluggable; no Chroma-specific assumptions are baked into the retrieval logic.</p>
+
+    <p>Retrieval proceeds in three steps:</p>
+
+    <ul>
+        <li><strong>Semantic similarity</strong> over the registered tool descriptions, given the structured query from the intent parser. This produces a shortlist of candidate tools whose descriptions are semantically close to the intent.</li>
+        <li><strong>Graph reachability filter.</strong> The candidate set is narrowed to tools that can actually participate in a composable path, meaning their inputs and outputs connect to other relevant tools through edges in the schema-compatibility graph (Section 8).</li>
+        <li><strong>Path ranking.</strong> Where multiple candidate paths exist, the ranker chooses one.</li>
+    </ul>
+
+    <p>The V1 path ranker is deliberately basic: shortest path wins, with ties broken by the proportion of edges in the path that are graph-backed (pre-existing, high-confidence) versus LLM-proposed (newer, lower-confidence). Sophisticated ranking, things like success-rate-weighted, cost-aware, multi-criteria, is parked for future work.</p>
+
+    <p>For evaluation, V1 uses a synthetic test set of 50 agents anchored on real public API specifications across 5 to 6 domains (telecom, customer/CRM, finance, communications, analytics). Ten of these are deliberately constructed as <strong>dangling</strong> nodes: tools whose inputs cannot be satisfied by any other tool's output in the registry. Dangling tools test the system's ability to retrieve based on semantic match while correctly refusing to compose.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 8 -->
+    <h2>8. Graph Layer and Composition Planner</h2>
+    <div class="h-rule"></div>
+
+    <p>The graph layer holds the schema-compatibility relationships between tools. V1 uses Neo4j.</p>
+
+    <p>Nodes are tools. Edges represent the assertion that one tool's output can satisfy another tool's input, meaning both type alignment (the underlying types match) and semantic alignment (the fields refer to the same concept, by ontology anchor or by approved alias). An edge is a strong claim: it says these two tools can be composed without further reconciliation.</p>
+
+    <h3>Edge provenance</h3>
+
+    <p>Every edge in the graph carries provenance metadata indicating how it was created:</p>
+
+    <ul>
+        <li><strong>Human-curated.</strong> A platform engineer or domain expert added the edge directly, based on knowledge of the tools.</li>
+        <li><strong>LLM-proposed, human-approved.</strong> An LLM analyzed two tool descriptions, proposed that a compatibility relationship exists, and a human reviewed and approved the proposal before it was persisted.</li>
+        <li><strong>Human-created-manually.</strong> Similar to human-curated but added through the registration UI rather than direct graph edits, typically by the tool author at registration time.</li>
+    </ul>
+
+    <p>Each edge also carries an audit history: who created it, when, what the LLM's confidence was if applicable, and any subsequent modifications.</p>
+
+    <h3>The five-tier composition planner</h3>
+
+    <p>The composition planner is the decision point that turns retrieval and graph data into a plan. It classifies every query into one of five tiers based on graph coverage of the candidate path and LLM confidence about any gaps.</p>
+
+    <p><strong>Tier 1: Full graph coverage, high confidence.</strong> Every edge in the candidate path already exists in the graph and is well-established. The plan is emitted directly. This is the steady-state happy path.</p>
+
+    <p><strong>Tier 2: Partial graph coverage, high LLM confidence on the gap.</strong> Most edges exist; one or two are missing. The LLM proposes the missing edges with high confidence (both endpoints are ontology-anchored, or the LLM has strong evidence from the descriptions). The plan is emitted, but the proposed edges enter the human approval queue for review.</p>
+
+    <p><strong>Tier 3: Partial graph coverage, low LLM confidence.</strong> Edges are missing and the LLM is uncertain about them. The plan does not auto-emit. The proposed edges go to human approval, and the plan is held until they are either approved or rejected.</p>
+
+    <p><strong>Tier 4: No graph coverage, but LLM proposes a high-confidence path.</strong> None of the needed edges exist, but the LLM has strong evidence that a viable path exists. Same handling as Tier 3: approval required before emission.</p>
+
+    <p><strong>Tier 5: No path, low confidence.</strong> The system cannot construct a viable plan and has no high-confidence proposals. The query fails honestly with a diagnostic indicating what's missing, typically tools or edges that would close the gap.</p>
+
+    <p>The planner emits <strong>one plan per query</strong>, not multiple options for the user to choose between. When multiple candidate paths exist within the same tier, the path ranker selects one. This is a deliberate design choice: presenting multiple plans pushes the disambiguation cost onto the user, who is least equipped to make it. Ratatoskr is responsible for picking the best plan it can defend, or failing honestly when it cannot.</p>
+
+    <p>Confidence gates the <em>shape</em> of the plan, not its presence. A high-confidence plan emits with full structure. A lower-confidence plan emits with explicit annotations about which edges are LLM-proposed and pending approval. The user always knows what tier they are operating in.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 9 -->
+    <h2>9. Human Roles in Composition</h2>
+    <div class="h-rule"></div>
+
+    <p>Two distinct human roles exist in Ratatoskr's composition flow. Both are deliberate, and neither is provisional.</p>
+
+    <h3>Human as workflow initiator</h3>
+
+    <p>Every composition is human-triggered. Ratatoskr does not propose workflows on its own. Tools are registered, the graph self-extends through approved proposals, but no workflow is composed until a human expresses an intent. This is a design choice, not a limitation. Autonomous workflow generation, where agents decide on their own to compose other agents, is outside the trust envelope of organizational deployment.</p>
+
+    <h3>Human as edge approver</h3>
+
+    <p>Every LLM-proposed edge requires human approval before being persisted to the graph. The LLM analyzes tool descriptions and proposes that an output of one tool is compatible with an input of another. The human reviews the proposal, the rationale, the confidence score, and either approves or rejects. Approved edges enter the graph with <code>LLM-proposed-human-approved</code> provenance and are subsequently used as if they were human-curated.</p>
+
+    <p>This design accepts a real cost: human approval scales linearly with the rate of new tool registrations and intent queries. At low volume, this is invisible. At high volume, in large organizations with hundreds of tools, the approval queue becomes a bottleneck.</p>
+
+    <p>V1 accepts the bottleneck because the alternative is worse. LLMs hallucinate, and edges persist; a confidently-wrong edge silently corrupts every workflow that uses it. The auditability claim, that every edge in the graph has known provenance and a human approver, is foundational to enterprise trust, and it doesn't survive shortcuts.</p>
+
+    <p>V2 work focuses on making approval <em>scale</em>, not removing humans from the loop. Batch approval flows let reviewers handle dozens of proposals at once. Domain-delegated approvers route telecom edges to telecom team reviewers, finance edges to finance reviewers. Tiered approval distinguishes high-stakes edges (cross-domain, high-impact tools) from low-stakes ones (clearly ontology-anchored, narrow impact). Smarter pre-validation auto-classifies proposals where both endpoints are ontology-anchored as low-risk, accelerating reviewer attention.</p>
+
+    <p>Confidence-gated auto-approval, where high-confidence ontology-anchored proposals bypass human review, is part of the longer arc. It becomes plausible when verification mechanisms exist to catch the wrong-but-confident case, and when the organizational ontology has matured enough that anchoring is the norm. It is not in scope for V1 or V2. The system's correctness story does not depend on auto-approval existing.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 10 -->
+    <h2>10. Failure Modes</h2>
+    <div class="h-rule"></div>
+
+    <p>Ratatoskr's behavior under uncertainty is governed by a single principle: <strong>prefer honest failure over confident-wrong output.</strong></p>
+
+    <p>Most agent systems default to producing something. A user asks for a workflow; the system returns a workflow. If the system isn't sure, it returns its best guess and lets the user discover the problem at runtime. This is reasonable for casual tooling and unreasonable for organizational infrastructure, where wrong workflows produce wrong actions on real systems.</p>
+
+    <p>Ratatoskr defaults to producing only what it can defend. The five-tier planner is the mechanism. Each tier has a decreasing trust gradient, and the system always knows which tier it is in. Tier 1 emits without ceremony. Tier 5 refuses to emit a plan and instead returns a diagnostic.</p>
+
+    <h3>Worked failure scenario</h3>
+
+    <p>A user expresses an intent: <em>"Find all customers in the past quarter who had both a shipping delay and an open billing dispute, and route them to a senior support agent."</em></p>
+
+    <p>The intent parser produces a structured query. Retrieval finds candidate tools: a customer search tool, a shipment status tool, a billing dispute lookup, and a support routing tool. The graph layer attempts to construct a path. The customer search and the billing dispute tool have a graph-backed edge. The shipment status tool has not been previously composed with the billing dispute tool; the LLM is asked to propose an edge. The proposal comes back with low confidence, because the relevant fields aren't ontology-anchored, the descriptions are brief, and the LLM cannot confidently assert that the shipment's <code>customer_ref</code> is the same concept as the billing dispute's <code>customer_id</code>.</p>
+
+    <p>The composition planner classifies this as Tier 5: critical edges are missing, LLM confidence is low, and no plan can be defended. The system does not emit a plan. It returns a diagnostic that surfaces what was discovered, where composition broke, and what the system suggests for closing the gaps.</p>
+
+    <pre class="code-block">NOTE: The following diagnostic is generated by an LLM analyzing the partial
+graph. Suggestions can be wrong. Review each suggestion before acting on it.
+
+No plan could be constructed for this intent.
+
+Discovered tools (4):
+  - Customer Search
+  - Shipment Status
+  - Billing Dispute Lookup
+  - Support Routing
+
+Composition gaps:
+
+  1. Shipment Status &rarr; Billing Dispute Lookup
+     No compatible edge. The customer_ref field on Shipment Status and the
+     customer_id field on Billing Dispute Lookup are not anchored to a
+     shared ontology concept.
+
+     Suggestions:
+       - Anchor both fields to Customer.cust_id in the organizational
+         ontology. (confidence: high)
+       - Register a bridging tool that joins shipment and billing records
+         by customer reference. (confidence: medium)
+
+  2. Billing Dispute Lookup &rarr; Support Routing
+     Edge exists in the graph but expects a priority field that Billing
+     Dispute Lookup does not currently emit.
+
+     Suggestions:
+       - Extend Billing Dispute Lookup to emit a priority field anchored
+         to SupportTicket.priority. (confidence: high)
+       - Insert a priority-inference tool between the two. (confidence: low)</pre>
+
+    <p>The user gets nothing executable. They also get a clear inventory of what was discovered, where composition broke, and what changes would close the gaps. Confidence scores on each suggestion let the user prioritize: high-confidence suggestions are likely correct and need light review, low-confidence suggestions need scrutiny before acting. The system has failed visibly, not silently, and it has failed <em>usefully</em>.</p>
+
+    <h3>Other failure modes</h3>
+
+    <p><strong>Multiple candidate paths.</strong> The ranker emits one. The single-plan-per-query principle holds because presenting alternatives pushes the disambiguation cost onto the user, who is least equipped to make it. Other paths are suppressed.</p>
+
+    <p><strong>Schema reconciliation needed.</strong> A workflow requires that one tool's output field be transformed before it can serve as another tool's input field (aggregating, computing, splitting). V1 does not handle field-level reconciliation. Such cases fail with an explicit diagnostic, rather than silently emitting a plan with implicit lossy mapping.</p>
+
+    <p><strong>Partial graph coverage.</strong> Handled by the planner tiers. The user sees that some edges in the plan are LLM-proposed pending approval, and can choose to wait for approval or amend the intent.</p>
+
+    <p>The common thread is visibility. The system exposes its uncertainty; it does not hide it.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 11 -->
+    <h2>11. Design Decisions and Limits</h2>
+    <div class="h-rule"></div>
+
+    <h3>Trade-offs taken</h3>
+
+    <p><strong>JSON-only handoffs in V1.</strong> Composition reasons over structured data. NL handoffs are out of scope; where they appear in workflows, an extraction adapter is itself a tool that participates in composition.</p>
+
+    <p><strong>Single plan per query.</strong> No multi-plan exploration. The system either commits to a defensible plan or fails. Multi-plan exploration is a UX feature that pushes disambiguation cost to the user, which is the opposite of what the system should do.</p>
+
+    <p><strong>Human-in-the-loop for all LLM-proposed edges.</strong> Correctness over throughput. The bottleneck is acknowledged and addressed in V2 through approval ergonomics.</p>
+
+    <p><strong>Basic path ranker.</strong> Shortest path with graph-backed-edge tie-breaking. Sophisticated ranking, things like success-rate-weighted, cost-aware, multi-criteria, is parked.</p>
+
+    <p><strong>Ratatoskr ships ontology infrastructure.</strong> Organizations populate the ontology with their concepts; they don't build the substrate. This makes the ontology layer a Ratatoskr-internal component, not a third-party dependency.</p>
+
+    <h3>Parked for future work</h3>
+
+    <ul>
+        <li>Field-level schema reconciliation (transformations, aggregations, splits between output and input fields)</li>
+        <li>Edge revocation flows (graph maintenance when tools change or compatibility assumptions are invalidated)</li>
+        <li>Sophisticated path ranking</li>
+        <li>Sophisticated derivation expression for derived ontology concepts</li>
+        <li>Ontology evolution and versioning at scale</li>
+        <li>NL handoff support</li>
+    </ul>
+
+    <h3>Out of scope for compositional retrieval</h3>
+
+    <p>Several capabilities belong to other Ratatoskr components or external systems:</p>
+
+    <ul>
+        <li><strong>Governance.</strong> Policy enforcement, access control over which tools can compose with which, role-based composition restrictions.</li>
+        <li><strong>Orchestration runtime.</strong> Actual execution of the plans Ratatoskr emits.</li>
+        <li><strong>Security and authentication.</strong> Credential management, agent identity.</li>
+        <li><strong>Agent versioning and lifecycle.</strong> Handling tool updates, deprecation, backward compatibility.</li>
+        <li><strong>Registration drift.</strong> Tool registrations are assumed accurate. Detecting drift between registered descriptions and actual tool behavior, whether from code changes, API updates, or semantic shifts, falls under the agent versioning and lifecycle management component.</li>
+        <li><strong>Observability.</strong> Runtime telemetry, workflow tracing, performance monitoring.</li>
+    </ul>
+
+    <p>These are part of Ratatoskr's broader scope. They are not part of the compositional retrieval component described in this paper.</p>
+
+    <h3>Timing</h3>
+
+    <p>This problem is early. Ratatoskr's design optimizes for the long arc, not immediate adoption. There is a possibility the industry doesn't move toward compositional agent infrastructure at all. Given the current trajectory of agent tooling proliferation, that scenario looks unlikely. The organizations that take the substrate seriously now will be moving while the ones that don't are rebuilding.</p>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 12 -->
+    <h2>12. Future Work</h2>
+    <div class="h-rule"></div>
+
+    <p>Future work splits into two parts: extensions within the compositional retrieval component, and development of the broader Ratatoskr platform.</p>
+
+    <h3>Within compositional retrieval</h3>
+
+    <ul>
+        <li>Sophisticated path ranking driven by historical success rates, cost models, and multi-criteria optimization.</li>
+        <li>Field-level schema reconciliation, including the language for expressing transformations between output and input fields.</li>
+        <li>Natural-language handoff support via extraction adapters that participate as composable tools.</li>
+        <li>Edge revocation and graph maintenance flows for handling tool updates and compatibility regressions.</li>
+        <li>Approval ergonomics: batch approval, domain-delegated reviewers, tiered approval for low-risk versus high-risk edges, smart pre-validation. Eventually, confidence-gated auto-approval for ontology-anchored edges with verification mechanisms.</li>
+        <li>Ontology layer expansion: richer reasoning beyond flat concept lookup, ontology evolution and versioning, federated ontologies across business units.</li>
+    </ul>
+
+    <h3>Across Ratatoskr as a platform</h3>
+
+    <ul>
+        <li><strong>Governance engine.</strong> Policies governing which tools can compose with which, access controls, audit and compliance for composed workflows.</li>
+        <li><strong>Orchestration runtime.</strong> Execution of Ratatoskr-emitted plans, with state tracking, retry handling, and error recovery.</li>
+        <li><strong>Security and authentication layer.</strong> Credential management for composed workflows, agent identity, secret handling.</li>
+        <li><strong>Agent versioning and lifecycle management.</strong> Semantic versioning of tools, deprecation flows, backward compatibility guarantees, and detection of drift between registered tool descriptions and actual tool behavior.</li>
+        <li><strong>Observability and telemetry.</strong> Runtime instrumentation, workflow tracing, performance and reliability monitoring across composed agent paths.</li>
+    </ul>
+
+    <p>The compositional retrieval component is the foundation. The other components extend Ratatoskr's scope and will be developed in subsequent work.</p>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+        <p class="footer-note">Ratatoskr is named after the squirrel that ran messages between the realms of Yggdrasil in Norse mythology. The system's job is the same: move information between tools intentionally, without distortion or harm.</p>
+        <div class="back-link">
+            &larr; <a href="/">Back to home</a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for fullscreen diagram view -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-label="Diagram fullscreen view">
+    <button class="modal-close" id="modal-close" type="button" aria-label="Close fullscreen view">Close</button>
+    <div class="modal-svg-container" id="modal-svg-container"></div>
+</div>
+
+<!-- Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+<!-- Theme + Mermaid + Modal script -->
+<script>
+    (function() {
+      var root = document.documentElement;
+      var btn = document.getElementById('theme-toggle');
+      var label = document.getElementById('theme-label');
+
+      function currentTheme() {
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        if (stored === 'light' || stored === 'dark') return stored;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      function getCssVar(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      }
+
+      function buildMermaidConfig() {
+        var theme = currentTheme();
+        var isDark = theme === 'dark';
+        return {
+          startOnLoad: false,
+          theme: 'base',
+          securityLevel: 'strict',
+          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+          themeVariables: {
+            background: getCssVar('--bg-surface'),
+            primaryColor: getCssVar('--bg-surface'),
+            primaryTextColor: getCssVar('--text-primary'),
+            primaryBorderColor: getCssVar('--accent-blue'),
+            lineColor: isDark ? getCssVar('--text-muted') : getCssVar('--text-body'),
+            secondaryColor: getCssVar('--bg-primary'),
+            tertiaryColor: getCssVar('--bg-primary'),
+            mainBkg: getCssVar('--bg-surface'),
+            secondBkg: getCssVar('--bg-primary'),
+            textColor: getCssVar('--text-primary'),
+            // Sequence diagram
+            actorBkg: getCssVar('--bg-surface'),
+            actorBorder: getCssVar('--accent-blue'),
+            actorTextColor: getCssVar('--text-primary'),
+            actorLineColor: getCssVar('--text-muted'),
+            signalColor: getCssVar('--text-body'),
+            signalTextColor: getCssVar('--text-primary'),
+            labelBoxBkgColor: getCssVar('--bg-primary'),
+            labelBoxBorderColor: getCssVar('--border-primary'),
+            labelTextColor: getCssVar('--text-primary'),
+            loopTextColor: getCssVar('--text-primary'),
+            noteBkgColor: getCssVar('--accent-green-bg'),
+            noteBorderColor: getCssVar('--accent-green'),
+            noteTextColor: getCssVar('--text-primary'),
+            activationBkgColor: getCssVar('--bg-primary'),
+            activationBorderColor: getCssVar('--accent-blue'),
+            // Class diagram
+            classText: getCssVar('--text-primary'),
+            // Cluster / subgraph
+            clusterBkg: getCssVar('--bg-primary'),
+            clusterBorder: getCssVar('--border-secondary'),
+            // Edges
+            edgeLabelBackground: getCssVar('--bg-surface')
+          }
+        };
+      }
+
+      var rendered = false;
+      var originalSources = [];
+
+      function captureOriginalSources() {
+        var nodes = document.querySelectorAll('pre.mermaid');
+        for (var i = 0; i < nodes.length; i++) {
+          originalSources.push(nodes[i].textContent);
+        }
+      }
+
+      function resetMermaidNodes() {
+        var wrappers = document.querySelectorAll('.mermaid-wrapper');
+        for (var i = 0; i < wrappers.length; i++) {
+          var existing = wrappers[i].querySelector('.mermaid');
+          if (existing) {
+            var fresh = document.createElement('pre');
+            fresh.className = 'mermaid';
+            fresh.textContent = originalSources[i] || '';
+            existing.parentNode.replaceChild(fresh, existing);
+          }
+        }
+      }
+
+      function renderMermaid() {
+        try {
+          if (typeof mermaid === 'undefined') return;
+          if (rendered) {
+            resetMermaidNodes();
+          }
+          mermaid.initialize(buildMermaidConfig());
+          mermaid.run({ querySelector: 'pre.mermaid' });
+          rendered = true;
+        } catch (e) {
+          console.error('Mermaid render failed', e);
+        }
+      }
+
+      function updateLabel() {
+        var theme = currentTheme();
+        label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      }
+
+      btn.addEventListener('click', function() {
+        var next = currentTheme() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) {}
+        updateLabel();
+        // Re-render Mermaid with new theme tokens
+        setTimeout(renderMermaid, 0);
+      });
+
+      updateLabel();
+
+      // ---- Modal: inline SVG clone for crisp scaling and native pinch-zoom ----
+      var modal = document.getElementById('modal-backdrop');
+      var modalContainer = document.getElementById('modal-svg-container');
+      var modalClose = document.getElementById('modal-close');
+
+      function openModal(svgEl) {
+        if (!svgEl) return;
+        // Clone the SVG so we don't disturb the original
+        var clone = svgEl.cloneNode(true);
+        // Strip any explicit width/height so CSS controls the size and SVG scales fluidly via viewBox
+        clone.removeAttribute('width');
+        clone.removeAttribute('height');
+        clone.removeAttribute('style');
+        // Ensure preserveAspectRatio is set for clean centered scaling
+        if (!clone.getAttribute('preserveAspectRatio')) {
+          clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        }
+        // Clear and inject
+        modalContainer.innerHTML = '';
+        modalContainer.appendChild(clone);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        modalContainer.innerHTML = '';
+        document.body.style.overflow = '';
+      }
+
+      function attachModalHandlers() {
+        var wrappers = document.querySelectorAll('.mermaid-wrapper[data-zoomable]');
+        for (var i = 0; i < wrappers.length; i++) {
+          (function(wrapper) {
+            wrapper.addEventListener('click', function(e) {
+              var svg = wrapper.querySelector('svg');
+              if (svg) openModal(svg);
+            });
+          })(wrappers[i]);
+        }
+      }
+
+      modalClose.addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e) {
+        // Click on backdrop (not the image) closes
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
+
+      // Boot Mermaid + modal once the script tag has loaded
+      function boot() {
+        captureOriginalSources();
+        renderMermaid();
+        attachModalHandlers();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+</script>
+
+</body>
+</html>

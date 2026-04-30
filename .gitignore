@@ -26,3 +26,12 @@ yarn-error.log*
 
 # Logs
 *.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Optional (sometimes generated)
+out/
